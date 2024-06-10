@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Préstamo</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Avelina Hernandez Hernandez</h1>
+        <h6>9A, matrícula 20210667</h6>
+        <form onsubmit="predict(event)">
+            <div class="form-group">
+                <label for="income">Ingresos</label>
+                <input type="number" class="form-control" id="income" name="income" placeholder="Ingresa tus ingresos" required>
+            </div>
+            <div class="form-group">
+                <label for="loan_amount">Cantidad solicitada</label>
+                <input type="number" class="form-control" id="loan_amount" name="loan_amount" placeholder="Ingresa la cantidad solicitada" required>
+            </div>
+            <div class="form-group">
+                <label for="term">Plazo de pago (años)</label>
+                <input type="number" class="form-control" id="term" name="term" placeholder="Ingresa el plazo de pago en años" required>
+            </div>
+            <div class="form-group">
+                <label for="credit_score">Puntuación crediticia</label>
+                <input type="number" class="form-control" id="credit_score" name="credit_score" placeholder="Ingresa tu puntuación crediticia" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Predecir</button>
+        </form>
+    </div>
+</body>
+<script>
+    function predict(event) {
+        event.preventDefault();
+
+        const ingresos = document.getElementById('income').value;
+        const cantidad_solicitada = document.getElementById('loan_amount').value;
+        const pago_anios = document.getElementById('term').value;
+        const puntuacion = document.getElementById('credit_score').value;
+
+        if (!ingresos || !cantidad_solicitada || !pago_anios || !puntuacion) {
+            alert("Por favor llene correctamente todos los campos");
+            return;
+        }
+
+        fetch('/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `income=${ingresos}&loan_amount=${cantidad_solicitada}&term=${pago_anios}&credit_score=${puntuacion}`,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                alert(data.prediction);
+            }
+        })
+        .catch(error => {
+            alert('Error en la solicitud');
+            console.error('Error:', error);
+        });
+    }
+</script>
+</html>
